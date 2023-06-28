@@ -10,19 +10,17 @@ import { useAuth } from "../providers/getAuth";
 import Eye from "../assets/eye-solid.svg";
 import { useToggleState } from "../Profile/useToggleState";
 
-const signUp = ["email", "name", "password", "Confirm Password"] as const;
+const signUp = ["email", "password", "Confirm Password"] as const;
 type SignUpField = (typeof signUp)[number];
 let confirmToggle: string;
 
 export interface SignUpInfo {
   email: string;
-  name: string;
   password: string;
 }
 
 interface SignUpErrors {
   email: string;
-  name: string;
   password: string;
   "Confirm Password": string;
 }
@@ -31,14 +29,12 @@ export const SignUp = () => {
   const navigate = useNavigate();
   const [info, setInfo] = useState<SignUpInfo>({
     email: "",
-    name: "",
     password: "",
   });
   const { register } = useAuth();
   const [showPassword, setShowPassword] = useToggleState(true);
 
   const errors: SignUpErrors = {
-    name: info.name === "" ? "Required" : "",
     email: emailValidation(info.email),
     password: passwordValidation(info.password),
     "Confirm Password": confirmToggle,
@@ -116,11 +112,7 @@ export const SignUp = () => {
                       setInfo((prev) => ({ ...prev, [name]: value.trim() }));
                     }}
                   />
-                  {field === "email" ? (
-                    <p>{errors?.email}</p>
-                  ) : (
-                    <p>{errors?.name}</p>
-                  )}
+                  {field === "email" ? <p>{errors?.email}</p> : ""}
                 </>
               )}
             </label>

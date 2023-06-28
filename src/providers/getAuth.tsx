@@ -4,16 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { ChildrenType } from "./getRecipies";
 import { postRequest, patchRequest } from "../api/API_requests";
 import { checkForExistingUser, getUserFromDb } from "../validations/validators";
-
-interface User {
-  email: string;
-  name: string;
-  password: string;
-  id: number;
-}
+import { copyFileSync } from "fs";
 
 interface AuthContextType {
-  user: User | null;
+  user: string;
   setUser: Function;
   register: Function;
   login: Function;
@@ -23,13 +17,16 @@ interface AuthContextType {
 
 interface info {
   email: string;
-  name: string;
   password: string;
-  id: number;
+}
+
+interface User {
+  email: string;
+  password: string;
 }
 
 export const AuthContext = createContext<AuthContextType>({
-  user: null,
+  user: "",
   setUser: () => {},
   register: async () => {
     throw new Error("register function not implemented");
@@ -40,53 +37,50 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }: ChildrenType) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthContextType["user"]>("");
   const navigate = useNavigate();
 
   useEffect(() => {
     const maybeUser = localStorage.getItem("user");
     if (maybeUser) {
       const parsedUser = JSON.parse(maybeUser);
-      setUser(parsedUser);
+      setUser(parsedUser.userInfo.email);
     }
   }, []);
 
   const register = async (info: info) => {
-    const { email, name, password, id } = info;
-    const user = await checkForExistingUser({ name, password, id, email });
-    if (user) toast.error("User Already exists, Please Sign In");
-    else {
-      toast.success("Success");
-      postRequest("users", { email, name, password }).then((user) => {
-        localStorage.setItem(
-          "user",
-          JSON.stringify({ name: name, password: password, id: id })
-        );
-        return setUser({ name, password, id, email });
-      });
+    const { password, email } = info;
+    const newUser = await postRequest("users", { password, email });
+    if (newUser.message) {
+      toast.error(newUser.message);
+    } else {
+      toast.success("Registered Successfully!");
+      localStorage.setItem("user", JSON.stringify(newUser));
+      setUser(newUser.userInfo.email);
+      navigate("/Home");
     }
   };
 
-  const login = async ({ name, password, id, email }: User) => {
-    const user = await getUserFromDb({ name, password, id, email });
-    if (!user) toast.error("User does not exist");
-    else {
-      localStorage.setItem("user", JSON.stringify(user));
-      setUser(user);
-      navigate("/Home");
+  const login = async ({ password, email }: User) => {
+    const user = await postRequest("users/auth/login", { email, password });
+    if (user.token !== undefined && user) {
       toast.success("Signed In");
+      localStorage.setItem("user", JSON.stringify(user));
+      navigate("/Home");
+    } else {
+      toast.error("Invalid credentials");
     }
+    setUser(user.userInfo.email);
   };
 
   const logout = () => {
-    setUser(null);
+    setUser("");
     localStorage.removeItem("user");
   };
 
-  const editInfo = async (endpoint: string, updatedData: object) => {
-    console.log(updatedData);
-    const user = await patchRequest(`users${endpoint}`, updatedData);
-    console.log({ user });
+  const editInfo = async (updatedData: object) => {
+    const user = await patchRequest(`users`, updatedData);
+    console.log(user);
   };
 
   const contextValue: AuthContextType = {

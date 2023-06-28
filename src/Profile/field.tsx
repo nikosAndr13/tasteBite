@@ -24,10 +24,7 @@ export const Field = ({ fieldName, fieldValue, errorM }: props) => {
               className="border-2 outline-none p-2"
               placeholder={"Type here..."}
               onChange={(e) => {
-                setUser((prev: object) => ({
-                  ...prev,
-                  [fieldName]: e.target.value.trim(),
-                }));
+                setUser(e.target.value.trim());
               }}
             />
             <small>{errorM}</small>

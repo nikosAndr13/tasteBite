@@ -50,31 +50,7 @@ export const RecipePage = () => {
                 </ul>
               </div>
               <div className="flex items-center flex-col mt-40">
-                {Number(user?.id) === Number(recipe.userid) ? (
-                  <p>
-                    You have create it this recipe, so you are welcome to delete
-                    it
-                  </p>
-                ) : (
-                  <p>
-                    You can't delete this recipe, cause user {user?.id} created
-                    it
-                  </p>
-                )}
-                <button
-                  onClick={() => {
-                    if (confirm("Are you sure?")) {
-                      toast.success("Please Refresh for the changes to Apply");
-                      deleteRecipe(recipe.id);
-                    } else {
-                      toast.success("Delete Request not fulfilled");
-                    }
-                  }}
-                  disabled={
-                    Number(user?.id) === Number(recipe.userid) ? false : true
-                  }
-                  className=" p-4 border-2 text-black rounded-md hover:bg-red-900 hover:text-white"
-                >
+                <button className=" p-4 border-2 text-black rounded-md hover:bg-red-900 hover:text-white">
                   Delete Recipe
                 </button>
               </div>

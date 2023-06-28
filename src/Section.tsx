@@ -17,7 +17,7 @@ export const Section = ({ title }: props) => {
       <div className="font-playFair font-bold text-4xl text-left p-6 mt-20">
         {title}
       </div>
-      <div className="flex justify-around items-center">
+      <div className="flex justify-around items-center flex-wrap">
         {title === "Popular Categories"
           ? categories.map((cat) => {
               const { isPopular, label, img } = cat;

@@ -35,7 +35,7 @@ export const NavBar = () => {
             />
           </button>
         </form>
-        {user === null ? (
+        {user === "" ? (
           <button
             onClick={() => {
               navigate("/login");
@@ -53,7 +53,7 @@ export const NavBar = () => {
               navigate(`/profile`);
             }}
           >
-            {user.name[0].toUpperCase()}
+            {user[0].toUpperCase()}
           </div>
         )}
       </nav>

@@ -1,23 +1,24 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { useComment } from "../providers/getComment";
 import { useAuth } from "../providers/getAuth";
+import { getRequest, postRequest } from "../api/API_requests";
 type props = { recipeId: number };
 
 export type comment = {
   recipeId: number;
-  id: number;
   userId: number;
   comment: string;
 };
 
 export const CommentSection = ({ recipeId }: props) => {
   const [comment, setComment] = useState<string>("");
-  const { user } = useAuth();
-  const { comments, setComments, postComment } = useComment();
+  const [allComments, setAllComments] = useState<comment[]>([]);
 
-  const commentToActuallyAppear = comments.filter(
-    (comment: comment) => recipeId === comment.recipeId
-  );
+  const getComments = async () => {
+    await getRequest(`comments/${recipeId}`).then(setAllComments);
+  };
+  useEffect(() => {
+    getComments();
+  }, []);
 
   return (
     <>
@@ -34,15 +35,10 @@ export const CommentSection = ({ recipeId }: props) => {
       <br />
       <button
         onClick={() => {
-          postComment({
-            userId: user?.id,
+          postRequest("comments", {
             comment: comment,
             recipeId: recipeId,
           });
-          setComments((prev: []) => [
-            ...prev,
-            { userId: user?.id, comment: comment, recipeId: recipeId },
-          ]);
         }}
         className="border-2 p-2 rounded-md hover:bg-sky-900 hover:border-sky-900 hover:text-white"
       >
@@ -50,16 +46,16 @@ export const CommentSection = ({ recipeId }: props) => {
       </button>
       <br /> <br />
       <h2 className="pl-5">Comments Will Appear below</h2>
-      {commentToActuallyAppear.length === 0 ? (
+      {allComments.length === 0 ? (
         <p>No Comments Yet</p>
       ) : (
-        commentToActuallyAppear.map((text, i) => {
-          const { id, userId, comment } = text;
+        allComments.map((text, i) => {
+          const { userId, comment } = text;
           return (
             <Fragment key={i}>
               <div>
                 <p className="p-5 text-2xl">
-                  <span className="font-bold">user{userId}</span>: {comment}
+                  <span className="font-bold">user {userId}</span>: {comment}
                 </p>
               </div>
             </Fragment>

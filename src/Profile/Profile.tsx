@@ -3,10 +3,12 @@ import toast from "react-hot-toast";
 import { Field } from "./field";
 import { emailValidation } from "../validations/validators";
 import { useNavigate } from "react-router-dom";
+import { delete_request } from "../api/API_requests";
 
 export const Profile = () => {
   const { logout, user, editInfo } = useAuth();
   const navigate = useNavigate();
+
   return (
     <>
       <div className="flex flex-col items-center mt-24 gap-2">
@@ -14,23 +16,15 @@ export const Profile = () => {
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            navigate(`/login`);
-            logout();
             toast.success("Sign again for the changes to apply");
-            editInfo(`/${user?.id}`, {
-              email: user?.email,
-              name: user?.name,
-              password: user?.password,
-            });
+            editInfo({ email: user });
           }}
         >
           <Field
-            fieldValue={user?.email}
+            fieldValue={user}
             fieldName={"email"}
-            errorM={emailValidation(user?.email)}
+            errorM={emailValidation(user)}
           />
-          <Field fieldValue={user?.name} fieldName="name" />
-          <Field fieldValue={user?.password} fieldName="password" />
           <div>
             <button
               type="submit"
@@ -52,7 +46,13 @@ export const Profile = () => {
         Logout
       </button>
       <div>
-        <button type="button">Delete Account</button>
+        <button
+          onClick={() => {
+            delete_request(`/${user}`);
+          }}
+        >
+          Delete Account
+        </button>
       </div>
     </>
   );

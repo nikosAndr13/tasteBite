@@ -5,15 +5,15 @@ import { useAuth } from "../providers/getAuth";
 import Eye from "../assets/eye-solid.svg";
 import { useToggleState } from "../Profile/useToggleState";
 
-const signIn = ["name", "password"] as const;
+const signIn = ["email", "password"] as const;
 
 interface SignInInfo {
-  name: string;
+  email: string;
   password: string;
 }
 
 interface SignInErrors {
-  name: string;
+  email: string;
   password: string;
 }
 
@@ -22,14 +22,14 @@ export let checkName: string = "";
 export const SignIn = () => {
   const navigate = useNavigate();
   const [info, setInfo] = useState<SignInInfo>({
-    name: "",
+    email: "",
     password: "",
   });
   const { login } = useAuth();
   const [showPassword, setShowPassword] = useToggleState(true);
 
   const errors: SignInErrors = {
-    name: info.name === "" ? "Required" : "",
+    email: info.email === "" ? "Required" : "",
     password: passwordValidation(info.password),
   };
 
@@ -74,7 +74,7 @@ export const SignIn = () => {
               {field === "password" ? (
                 <small>{errors?.password}</small>
               ) : (
-                <small>{errors?.name}</small>
+                <small>{errors?.email}</small>
               )}
             </label>
           </Fragment>
