@@ -5,7 +5,7 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "./providers/getAuth";
 
 export const NavBar = () => {
-  const fields = ["Home", "Categories", "About"] as const;
+  const fields = ["Home", "About"] as const;
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -20,22 +20,7 @@ export const NavBar = () => {
             </NavLink>
           </Fragment>
         ))}
-        <form
-          className="flex expand p-2 text-xl"
-          onSubmit={(e) => {
-            e.preventDefault();
-          }}
-        >
-          <input type="text" placeholder="Search..." className="outline-none" />
-          <button type="submit">
-            <img
-              src={search}
-              alt="search"
-              className="w-5 cursor-pointer text-xl"
-            />
-          </button>
-        </form>
-        {user === "" ? (
+        {!user ? (
           <button
             onClick={() => {
               navigate("/login");
@@ -53,7 +38,7 @@ export const NavBar = () => {
               navigate(`/profile`);
             }}
           >
-            {user[0].toUpperCase()}
+            {user?.email[0].toUpperCase()}
           </div>
         )}
       </nav>

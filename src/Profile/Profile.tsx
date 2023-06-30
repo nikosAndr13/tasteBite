@@ -21,9 +21,9 @@ export const Profile = () => {
           }}
         >
           <Field
-            fieldValue={user}
+            fieldValue={user?.email}
             fieldName={"email"}
-            errorM={emailValidation(user)}
+            errorM={emailValidation(user?.email)}
           />
           <div>
             <button

@@ -5,13 +5,14 @@ import { RecipePage } from "./RecipePage";
 interface props {
   title: string;
   img: string;
+  id: number;
 }
 
-export const RecipeCard = ({ title, img }: props) => {
+export const RecipeCard = ({ title, img, id }: props) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/recipe/${title}`);
+    navigate(`/recipe/${id}`);
   };
 
   return (

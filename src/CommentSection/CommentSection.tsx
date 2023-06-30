@@ -1,6 +1,8 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { useAuth } from "../providers/getAuth";
 import { getRequest, postRequest } from "../api/API_requests";
+import { useComment } from "../providers/getComment";
+import { useParams } from "react-router-dom";
 type props = { recipeId: number };
 
 export type comment = {
@@ -10,15 +12,10 @@ export type comment = {
 };
 
 export const CommentSection = ({ recipeId }: props) => {
+  const { user } = useAuth();
+  const { id } = useParams();
   const [comment, setComment] = useState<string>("");
-  const [allComments, setAllComments] = useState<comment[]>([]);
-
-  const getComments = async () => {
-    await getRequest(`comments/${recipeId}`).then(setAllComments);
-  };
-  useEffect(() => {
-    getComments();
-  }, []);
+  const { comments, setComments } = useComment();
 
   return (
     <>
@@ -39,6 +36,10 @@ export const CommentSection = ({ recipeId }: props) => {
             comment: comment,
             recipeId: recipeId,
           });
+          setComments((prev: []) => [
+            ...prev,
+            { comment: comment, userId: user?.id, recipeId: id },
+          ]);
         }}
         className="border-2 p-2 rounded-md hover:bg-sky-900 hover:border-sky-900 hover:text-white"
       >
@@ -46,10 +47,10 @@ export const CommentSection = ({ recipeId }: props) => {
       </button>
       <br /> <br />
       <h2 className="pl-5">Comments Will Appear below</h2>
-      {allComments.length === 0 ? (
+      {comments.length === 0 ? (
         <p>No Comments Yet</p>
       ) : (
-        allComments.map((text, i) => {
+        comments.map((text, i) => {
           const { userId, comment } = text;
           return (
             <Fragment key={i}>

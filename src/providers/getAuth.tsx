@@ -7,7 +7,7 @@ import { checkForExistingUser, getUserFromDb } from "../validations/validators";
 import { copyFileSync } from "fs";
 
 interface AuthContextType {
-  user: string;
+  user: User | null;
   setUser: Function;
   register: Function;
   login: Function;
@@ -23,10 +23,11 @@ interface info {
 interface User {
   email: string;
   password: string;
+  id?: number;
 }
 
 export const AuthContext = createContext<AuthContextType>({
-  user: "",
+  user: null,
   setUser: () => {},
   register: async () => {
     throw new Error("register function not implemented");
@@ -37,14 +38,14 @@ export const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }: ChildrenType) => {
-  const [user, setUser] = useState<AuthContextType["user"]>("");
+  const [user, setUser] = useState<AuthContextType["user"]>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const maybeUser = localStorage.getItem("user");
     if (maybeUser) {
       const parsedUser = JSON.parse(maybeUser);
-      setUser(parsedUser.userInfo.email);
+      setUser(parsedUser.userInfo);
     }
   }, []);
 
@@ -70,11 +71,11 @@ export const AuthProvider = ({ children }: ChildrenType) => {
     } else {
       toast.error("Invalid credentials");
     }
-    setUser(user.userInfo.email);
+    setUser(user.userInfo);
   };
 
   const logout = () => {
-    setUser("");
+    setUser(null);
     localStorage.removeItem("user");
   };
 

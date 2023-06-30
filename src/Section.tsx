@@ -1,14 +1,13 @@
 import { Fragment } from "react";
-import { useCategoriesContext } from "./providers/getCategories";
 import { useRecipiesContext } from "./providers/getRecipies";
 import { RecipeCard } from "./RecipeCard";
 
 interface props {
   title: string;
+  id: number;
 }
 
 export const Section = ({ title }: props) => {
-  const { categories } = useCategoriesContext();
   const { recipies } = useRecipiesContext();
   const deliciousFood = ["pizza", "chicken", "meat", "pasta", "Burger"];
   const sweets = ["pancakes", "desserts", "Cake", "smoothies", "Donuts"];
@@ -18,34 +17,23 @@ export const Section = ({ title }: props) => {
         {title}
       </div>
       <div className="flex justify-around items-center flex-wrap">
-        {title === "Popular Categories"
-          ? categories.map((cat) => {
-              const { isPopular, label, img } = cat;
-              if (isPopular) {
-                return (
-                  <Fragment key={label}>
-                    <div className="flex-col">
-                      <div className="container rounded-full cursor-pointer">
-                        <img src={img} alt={label} className="background" />
-                      </div>
-                      <div>{cat.label}</div>
-                    </div>
-                  </Fragment>
-                );
-              }
-            })
-          : ""}
         {title === "Super Delicious"
           ? recipies.map((rec) => {
               const {
                 title,
                 imageUrl,
                 category,
-              }: { title: string; imageUrl: string; category: string } = rec;
+                id,
+              }: {
+                title: string;
+                imageUrl: string;
+                category: string;
+                id: number;
+              } = rec;
               if (deliciousFood.includes(category)) {
                 return (
                   <Fragment key={title}>
-                    <RecipeCard title={title} img={imageUrl} />
+                    <RecipeCard title={title} img={imageUrl} id={id} />
                   </Fragment>
                 );
               }
@@ -57,11 +45,17 @@ export const Section = ({ title }: props) => {
                 title,
                 imageUrl,
                 category,
-              }: { title: string; imageUrl: string; category: string } = rec;
+                id,
+              }: {
+                title: string;
+                imageUrl: string;
+                category: string;
+                id: number;
+              } = rec;
               if (sweets.includes(category))
                 return (
                   <Fragment key={title}>
-                    <RecipeCard title={title} img={imageUrl} />
+                    <RecipeCard title={title} img={imageUrl} id={id} />
                   </Fragment>
                 );
             })
@@ -69,11 +63,14 @@ export const Section = ({ title }: props) => {
         <div className="flex flex-wrap gap-x-5">
           {title === "All recipes"
             ? recipies.map((rec) => {
-                const { title, imageUrl }: { title: string; imageUrl: string } =
-                  rec;
+                const {
+                  title,
+                  imageUrl,
+                  id,
+                }: { title: string; imageUrl: string; id: number } = rec;
                 return (
                   <Fragment key={title}>
-                    <RecipeCard title={title} img={imageUrl} />
+                    <RecipeCard title={title} img={imageUrl} id={id} />
                   </Fragment>
                 );
               })
